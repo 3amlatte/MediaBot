@@ -1,0 +1,140 @@
+<Window x:Class="MediaRenamer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:MediaRenamer"
+        Title="MediaBot" Icon="pack://application:,,,/assets/MediaBot.ico" Height="640" Width="1080" MinWidth="860" MinHeight="480"
+        Background="{StaticResource WindowBg}"
+        AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="100"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource RailBg}"
+                BorderBrush="{StaticResource BorderBrush}" BorderThickness="0,0,1,0">
+            <StackPanel Margin="0,6">
+                <Button x:Name="RenameNav" Style="{StaticResource NavButton}" Background="{StaticResource SelectedBg}" ToolTip="Rename files" Click="RenameNav_Click">
+                    <StackPanel>
+                        <TextBlock Text="&#xE8AC;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="Rename" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="EpisodesNav" Style="{StaticResource NavButton}" ToolTip="Browse a show's episodes" Click="Episodes_Click">
+                    <StackPanel>
+                        <TextBlock Text="&#xE714;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="Episodes" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="SubtitlesNav" Style="{StaticResource NavButton}" ToolTip="Find and fetch subtitles" Click="Subtitles_Click">
+                    <StackPanel>
+                        <TextBlock Text="&#xE8D2;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="Subtitles" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="SfvNav" Style="{StaticResource NavButton}" ToolTip="Verify and create checksum files" Click="Sfv_Click">
+                    <StackPanel>
+                        <TextBlock Text="&#xE73E;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="SFV" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="ListNav" Style="{StaticResource NavButton}" ToolTip="Export a list of the loaded files" Click="List_Click">
+                    <StackPanel>
+                        <TextBlock Text="&#xE8FD;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="List" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="MissingNav" Style="{StaticResource NavButton}" ToolTip="Find missing episodes in Sonarr or your files" Click="Missing_Click">
+                    <StackPanel>
+                        <TextBlock Text="&#xE721;" Style="{StaticResource NavIcon}"/>
+                        <TextBlock Text="Missing" Style="{StaticResource NavLabel}"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Border>
+
+        <Grid x:Name="RenameView" Grid.Row="0" Grid.Column="1" Margin="8,6,8,4">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock Text="Rename" FontSize="22" HorizontalAlignment="Center" Foreground="#C8C8C8" Margin="0,4,0,8"/>
+
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="110"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <GroupBox Grid.Column="0" Header="Original Files">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+                            <Button Style="{StaticResource IconButton}" Content="&#xE70E;" ToolTip="Move up" Click="Up_Click"/>
+                            <Button Style="{StaticResource IconButton}" Content="&#xE70D;" ToolTip="Move down" Click="Down_Click"/>
+                            <Button Style="{StaticResource IconButton}" Content="&#xE711;" ToolTip="Remove selected" Click="Remove_Click"/>
+                            <Button Content="Load" Margin="10,0,2,0" Height="26" Padding="10,0" Click="AddFiles_Click"/>
+                            <Button Style="{StaticResource IconButton}" Content="&#xE74D;" Margin="10,0,2,0" ToolTip="Clear all" Click="Clear_Click"/>
+                        </StackPanel>
+                        <Grid>
+                            <ListBox x:Name="OriginalList" DisplayMemberPath="OriginalName"
+                                     SelectionChanged="OriginalList_SelectionChanged"/>
+                            <TextBlock x:Name="EmptyText" Text="Drop files or folders here, or click Load."
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Foreground="Gray" TextWrapping="Wrap" TextAlignment="Center"
+                                       Margin="20" IsHitTestVisible="False"/>
+                        </Grid>
+                    </DockPanel>
+                </GroupBox>
+
+                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                    <Image x:Name="MatchPoster" Width="92" Height="130" Stretch="Uniform" Margin="0,0,0,10"/>
+                    <Button Width="92" Height="64" ToolTip="Apply the fetched match to the files" Click="Match_Click">
+                        <StackPanel>
+                            <TextBlock Text="&#xE8AB;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#6CC24A" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Match" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                    <Button Width="92" Height="64" Margin="0,16,0,0" ToolTip="Rename the files" Click="Rename_Click">
+                        <StackPanel>
+                            <TextBlock Text="&#xE72A;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#4DA3FF" HorizontalAlignment="Center"/>
+                            <TextBlock Text="Rename" HorizontalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+
+                <GroupBox Grid.Column="2" Header="New Names">
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,6,0,0">
+                            <Button Style="{StaticResource IconButton}" Content="&#xE70E;" ToolTip="Move up" Click="Up_Click"/>
+                            <Button Style="{StaticResource IconButton}" Content="&#xE70D;" ToolTip="Move down" Click="Down_Click"/>
+                            <Button Content="Fetch Data" Margin="10,0,2,0" Height="26" Padding="10,0" Click="Fetch_Click"/>
+                            <Button Style="{StaticResource IconButton}" Content="&#xE8C8;" Margin="10,0,2,0" ToolTip="Copy new names" Click="Copy_Click"/>
+                            <Button Style="{StaticResource IconButton}" Content="&#xE7A7;" ToolTip="Undo last rename" Click="Undo_Click"/>
+                            <Button Style="{StaticResource IconButton}" Content="&#xE713;" ToolTip="Preferences" Click="Preferences_Click"/>
+                        </StackPanel>
+                        <ListBox x:Name="NewList" DisplayMemberPath="DisplayNew" IsHitTestVisible="False" Focusable="False"/>
+                    </DockPanel>
+                </GroupBox>
+            </Grid>
+        </Grid>
+
+        <local:SubtitlesPanel x:Name="SubtitlesPanel" Grid.Row="0" Grid.Column="1" Margin="8,6,8,4" Visibility="Collapsed"/>
+        <local:ListPanel x:Name="ListPanel" Grid.Row="0" Grid.Column="1" Margin="8,6,8,4" Visibility="Collapsed"/>
+        <local:MissingPanel x:Name="MissingPanel" Grid.Row="0" Grid.Column="1" Margin="8,6,8,4" Visibility="Collapsed"/>
+        <local:SfvPanel x:Name="SfvPanel" Grid.Row="0" Grid.Column="1" Margin="8,6,8,4" Visibility="Collapsed"/>
+        <local:EpisodesPanel x:Name="EpisodesPanel" Grid.Row="0" Grid.Column="1" Margin="8,6,8,4" Visibility="Collapsed"/>
+
+        <Border Grid.Row="1" Grid.ColumnSpan="2" Background="{StaticResource RailBg}" Padding="8,3">
+            <DockPanel>
+                <TextBlock x:Name="OutputText" DockPanel.Dock="Right" Foreground="Gray" Margin="12,0,0,0"/>
+                <TextBlock x:Name="StatusText" Text="Drop video or subtitle files here to begin."/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

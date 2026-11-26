@@ -1,0 +1,39 @@
+<UserControl x:Class="MediaRenamer.SfvPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource WindowBg}"
+             AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop">
+    <DockPanel Margin="8,6,8,4">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="SFV &amp; Checksums" FontSize="22" HorizontalAlignment="Center" Foreground="#C8C8C8" Margin="0,4,0,8"/>
+            <DockPanel Margin="0,0,0,8">
+                <Button DockPanel.Dock="Right" x:Name="RunButton" Content="Verify" Width="140" Margin="6,0,0,0" Click="Run_Click"/>
+                <Button DockPanel.Dock="Right" x:Name="LookupButton" Content="Look up on srrdb" Width="140" Margin="6,0,0,0"
+                        Click="Lookup_Click" ToolTip="Identifies files by CRC32 using the srrDB release database"/>
+                <Button DockPanel.Dock="Right" Content="Clear" Width="80" Margin="6,0,0,0" Click="Clear_Click"/>
+                <Button DockPanel.Dock="Right" Content="Add Files..." Width="110" Margin="6,0,0,0" Click="AddFiles_Click"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="VerifyRadio" Content="Verify" IsChecked="True" Margin="0,0,14,0" Checked="Mode_Changed"/>
+                    <RadioButton x:Name="CreateRadio" Content="Create" Checked="Mode_Changed"/>
+                    <TextBlock Text="Algorithm" VerticalAlignment="Center" Margin="14,0,6,0"/>
+                    <ComboBox x:Name="AlgoCombo" Width="120"/>
+                </StackPanel>
+            </DockPanel>
+            <TextBlock x:Name="InfoText" Foreground="Gray" TextWrapping="Wrap" Margin="0,0,0,8"/>
+        </StackPanel>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="8"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Grid.Column="0" Header="Files">
+                <ListBox x:Name="FileList"/>
+            </GroupBox>
+            <GroupBox Grid.Column="2" Header="Results">
+                <ListBox x:Name="ResultList" FontFamily="Consolas"/>
+            </GroupBox>
+        </Grid>
+    </DockPanel>
+</UserControl>

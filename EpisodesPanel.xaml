@@ -1,0 +1,39 @@
+<UserControl x:Class="MediaRenamer.EpisodesPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource WindowBg}">
+    <DockPanel Margin="8,6,8,4">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="Episodes" FontSize="22" HorizontalAlignment="Center" Foreground="#C8C8C8" Margin="0,4,0,8"/>
+
+            <DockPanel Margin="0,0,0,8">
+                <Button DockPanel.Dock="Right" Content="Search" Width="80" Margin="6,0,0,0" Click="Search_Click"/>
+                <TextBox x:Name="QueryBox" ToolTip="Show name"/>
+            </DockPanel>
+
+            <DockPanel Margin="0,0,0,8">
+                <TextBlock Text="Show" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="ShowCombo" Width="380" HorizontalAlignment="Left" DisplayMemberPath="Display"
+                          SelectionChanged="ShowCombo_SelectionChanged"/>
+            </DockPanel>
+
+            <DockPanel Margin="0,0,0,8">
+                <TextBlock Text="Season" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <ComboBox x:Name="SeasonCombo" Width="240" HorizontalAlignment="Left" DisplayMemberPath="Display"
+                          SelectionChanged="SeasonCombo_SelectionChanged"/>
+            </DockPanel>
+
+            <TextBlock x:Name="SummaryText" Foreground="Gray" TextWrapping="Wrap" Margin="0,0,0,8"/>
+        </StackPanel>
+
+        <DataGrid x:Name="EpisodeGrid" AutoGenerateColumns="False" CanUserAddRows="False" IsReadOnly="True"
+                  GridLinesVisibility="Horizontal" HeadersVisibility="Column">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Episode" Binding="{Binding Code}" Width="80"/>
+                <DataGridTextColumn Header="Title" Binding="{Binding Title}" Width="2*"/>
+                <DataGridTextColumn Header="Aired" Binding="{Binding AirDate}" Width="110"/>
+                <DataGridTextColumn Header="Have file" Binding="{Binding Have}" Width="90"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>

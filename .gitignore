@@ -1,0 +1,19 @@
+# Build output
+bin/
+obj/
+publish/
+dist/
+installer/payload/
+installer/Components.wxs
+
+# Visual Studio / Rider user files
+.vs/
+.idea/
+*.user
+*.suo
+
+# Local secrets and settings. Never commit API keys.
+settings.json
+secrets.json
+*.secret.json
+appsettings.Local.json

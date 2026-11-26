@@ -1,0 +1,31 @@
+<UserControl x:Class="MediaRenamer.MissingPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Background="{StaticResource WindowBg}"
+             AllowDrop="True" DragOver="Window_DragOver" Drop="Window_Drop">
+    <DockPanel Margin="8,6,8,4">
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="Missing Episodes" FontSize="22" HorizontalAlignment="Center" Foreground="#C8C8C8" Margin="0,4,0,8"/>
+            <DockPanel Margin="0,0,0,8">
+                <Button DockPanel.Dock="Right" x:Name="ScanButton" Content="Scan Sonarr" Width="120" Margin="6,0,0,0" Click="Scan_Click"/>
+                <Button DockPanel.Dock="Right" x:Name="ClearButton" Content="Clear" Width="80" Margin="6,0,0,0" Click="Clear_Click"/>
+                <Button DockPanel.Dock="Right" x:Name="AddButton" Content="Add Files..." Width="110" Margin="6,0,0,0" Click="AddFiles_Click"/>
+                <StackPanel Orientation="Horizontal">
+                    <RadioButton x:Name="SonarrRadio" Content="Sonarr library" IsChecked="True" Margin="0,0,14,0" Checked="Mode_Changed"/>
+                    <RadioButton x:Name="FilesRadio" Content="Added files" Checked="Mode_Changed"/>
+                </StackPanel>
+            </DockPanel>
+            <DockPanel Margin="0,0,0,6">
+                <TextBlock Text="Filter by show" VerticalAlignment="Center" Margin="0,0,6,0"/>
+                <TextBox x:Name="FilterBox" TextChanged="Filter_Changed"/>
+            </DockPanel>
+            <TextBlock x:Name="SummaryText" TextWrapping="Wrap" Margin="0,0,0,6"/>
+        </StackPanel>
+
+        <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+            <TextBlock x:Name="InfoText" Foreground="Gray" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        </DockPanel>
+
+        <TreeView x:Name="ResultTree"/>
+    </DockPanel>
+</UserControl>

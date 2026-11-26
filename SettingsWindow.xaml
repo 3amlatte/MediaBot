@@ -1,0 +1,112 @@
+<Window x:Class="MediaRenamer.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Preferences" Width="580" Height="700" MinHeight="420"
+        WindowStartupLocation="CenterOwner"
+        Background="{StaticResource WindowBg}">
+    <DockPanel Margin="14">
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button Content="OK" Width="90" IsDefault="True" Click="Ok_Click"/>
+            <Button Content="Cancel" Width="90" Margin="8,0,0,0" IsCancel="True"/>
+        </StackPanel>
+
+        <ScrollViewer VerticalScrollBarVisibility="Auto">
+            <StackPanel>
+                <GroupBox Header="Metadata" Padding="8" Margin="0,0,0,10">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="TMDB API key" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="ApiKeyBox"/>
+                        </DockPanel>
+                        <CheckBox x:Name="WriteMetadataBox"
+                                  Content="Write NFO files and posters (Plex, Kodi, Jellyfin)"
+                                  ToolTip="Downloads artwork and writes .nfo files after each rename"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Naming" Padding="8" Margin="0,0,0,10">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="TV name" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="TvTemplateBox"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="Movie name" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="MovieTemplateBox"/>
+                        </DockPanel>
+                        <TextBlock Foreground="Gray" TextWrapping="Wrap" Margin="0,0,0,6"
+                                   Text="Tokens: {n} title, {s} season, {e} episode, {t} episode title, {y} year"/>
+                        <Button Content="Reset to Plex naming" HorizontalAlignment="Left" Padding="10,3" Click="Plex_Click"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Folders" Padding="8" Margin="0,0,0,10">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="Output folder" Width="130" VerticalAlignment="Center"/>
+                            <Button DockPanel.Dock="Right" Content="Browse..." Width="80" Margin="6,0,0,0" Click="Browse_Click"/>
+                            <TextBox x:Name="OutputBox" ToolTip="Leave empty to rename files in place"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="TV folder" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="TvFolderBox"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="Movie folder" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="MovieFolderBox"/>
+                        </DockPanel>
+                        <TextBlock Foreground="Gray" TextWrapping="Wrap"
+                                   Text="Folders are only used when an output folder is set. Use / for nested folders."/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Sonarr" Padding="8" Margin="0,0,0,10">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="Sonarr URL" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="SonarrUrlBox" ToolTip="For example http://localhost:8989"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="API key" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="SonarrKeyBox" ToolTip="Sonarr: Settings > General > API Key"/>
+                        </DockPanel>
+                        <CheckBox x:Name="SonarrSpecialsBox" Content="Include specials (Season 0)" Margin="0,0,0,4"/>
+                        <CheckBox x:Name="SonarrMonitoredBox" Content="Only check series monitored in Sonarr"/>
+                        <Button Content="Detect from this PC" HorizontalAlignment="Left" Padding="10,3" Margin="0,8,0,0" Click="DetectSonarr_Click"
+                                ToolTip="Reads the URL and API key from a Sonarr install on this PC"/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="OpenSubtitles" Padding="8" Margin="0,0,0,10">
+                    <StackPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="API key" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OpenSubsKeyBox"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="Username" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="OpenSubsUserBox"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="Password" Width="130" VerticalAlignment="Center"/>
+                            <PasswordBox x:Name="OpenSubsPasswordBox" Background="{StaticResource PanelBg}"
+                                         Foreground="{StaticResource TextBrush}" Padding="4,3"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="Language" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="SubtitleLanguageBox" Width="80" HorizontalAlignment="Left"
+                                     ToolTip="Language code, such as en, fr, de"/>
+                        </DockPanel>
+                        <TextBlock Foreground="Gray" TextWrapping="Wrap"
+                                   Text="Only needed for Subtitles > Search Online. Stored in plain text in %AppData%\MediaRenamer\settings.json."/>
+                    </StackPanel>
+                </GroupBox>
+
+                <GroupBox Header="Debug" Padding="8" Margin="0,0,0,10">
+                    <CheckBox x:Name="DryRunBox"
+                              Content="Dry run (preview only, never rename or move files)"/>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+    </DockPanel>
+</Window>
