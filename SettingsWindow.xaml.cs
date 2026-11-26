@@ -16,7 +16,11 @@ public partial class SettingsWindow : Window
         _current = current;
         Result = current;
 
+        SourceCombo.ItemsSource = new[] { "TMDB", "TheTVDB" };
+        SourceCombo.SelectedItem = current.MetadataSource.Equals("tvdb", StringComparison.OrdinalIgnoreCase) ? "TheTVDB" : "TMDB";
         ApiKeyBox.Text = current.ApiKey;
+        TvdbKeyBox.Text = current.TvdbApiKey;
+        TvdbPinBox.Text = current.TvdbPin;
         WriteMetadataBox.IsChecked = current.WriteMetadata;
         TvTemplateBox.Text = current.TvTemplate;
         MovieTemplateBox.Text = current.MovieTemplate;
@@ -72,7 +76,10 @@ public partial class SettingsWindow : Window
     {
         Result = _current with
         {
+            MetadataSource = (string)SourceCombo.SelectedItem == "TheTVDB" ? "tvdb" : "tmdb",
             ApiKey = ApiKeyBox.Text.Trim(),
+            TvdbApiKey = TvdbKeyBox.Text.Trim(),
+            TvdbPin = TvdbPinBox.Text.Trim(),
             WriteMetadata = WriteMetadataBox.IsChecked == true,
             TvTemplate = TvTemplateBox.Text,
             MovieTemplate = MovieTemplateBox.Text,

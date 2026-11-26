@@ -251,8 +251,8 @@ public partial class MainWindow : Window
 
     async Task FetchAsync()
     {
-        var client = GetClient();
-        if (client is null) return;
+        var meta = GetMetadata();
+        if (meta is null) return;
 
         var videos = _items.Where(i => !i.IsSubtitle).ToList();
         if (videos.Count == 0)
@@ -261,7 +261,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        var dlg = new MatchWindow(client, videos[0].Parsed.Title, DetectTvMode(), videos[0].Parsed.Year) { Owner = this };
+        var dlg = new MatchWindow(meta, videos[0].Parsed.Title, DetectTvMode(), videos[0].Parsed.Year) { Owner = this };
         if (dlg.ShowDialog() == true && dlg.Result is { } result)
         {
             _match = result;
@@ -271,8 +271,8 @@ public partial class MainWindow : Window
 
     async Task BuildAsync(SearchResult match)
     {
-        var client = GetClient();
-        if (client is null) return;
+        var meta = GetMetadata();
+        if (meta is null) return;
 
         try
         {
@@ -285,11 +285,11 @@ public partial class MainWindow : Window
                     .Select(i => i.Parsed.Season!.Value)
                     .Distinct();
                 foreach (var s in seasons)
-                    episodes[s] = await client.GetSeasonEpisodesAsync(match.Id, s);
+                    episodes[s] = await meta.GetEpisodesAsync(match, s);
             }
 
             Renamer.Build(_items, match, episodes, GetOptions());
-            if (_settings.WriteMetadata) await AttachMetadataAsync(client, match, episodes);
+            if (_settings.WriteMetadata) await AttachMetadataAsync(meta, match, episodes);
             await ShowMatchPosterAsync(match);
             Refresh();
             Status("Review the new names and destinations, then click Rename.");
@@ -302,15 +302,11 @@ public partial class MainWindow : Window
 
     async Task ShowMatchPosterAsync(SearchResult match)
     {
-        if (match.PosterPath is null)
-        {
-            MatchPoster.Source = null;
-            return;
-        }
-        MatchPoster.Source = await ImageLoader.LoadAsync(TmdbClient.ImageUrl(match.PosterPath, "w342"));
+        var url = MetadataService.PosterUrl(match, "w342");
+        MatchPoster.Source = url.Length == 0 ? null : await ImageLoader.LoadAsync(url);
     }
 
-    async Task AttachMetadataAsync(TmdbClient client, SearchResult match,
+    async Task AttachMetadataAsync(MetadataService meta, SearchResult match,
         Dictionary<int, Dictionary<int, EpisodeInfo>> episodes)
     {
         var ready = _items.Where(i => !i.IsSubtitle && i.Status == "Ready").ToList();
@@ -318,9 +314,9 @@ public partial class MainWindow : Window
         if (match.Kind == "tv")
         {
             Status("Fetching show metadata and artwork...");
-            var show = await client.GetTvDetailsAsync(match.Id);
+            var show = await meta.GetTvDetailsAsync(match);
             var showNfo = MetadataWriter.TvShowNfo(show);
-            var poster = show.PosterPath is null ? null : TmdbClient.ImageUrl(show.PosterPath);
+            var poster = show.PosterPath is null ? null : MetadataService.PosterUrl(match with { PosterPath = show.PosterPath }, "original");
 
             foreach (var item in ready)
             {
@@ -337,8 +333,8 @@ public partial class MainWindow : Window
         else
         {
             Status("Fetching movie metadata and artwork...");
-            var movie = await client.GetMovieDetailsAsync(match.Id);
-            var poster = movie.PosterPath is null ? null : TmdbClient.ImageUrl(movie.PosterPath);
+            var movie = await meta.GetMovieDetailsAsync(match);
+            var poster = movie.PosterPath is null ? null : MetadataService.PosterUrl(match with { PosterPath = movie.PosterPath }, "original");
 
             foreach (var item in ready)
             {
@@ -361,14 +357,13 @@ public partial class MainWindow : Window
         return videos.Count > 0 && videos.Count(v => v.Parsed.Season is not null) * 2 > videos.Count;
     }
 
-    TmdbClient? GetClient()
+    MetadataService? GetMetadata()
     {
-        if (string.IsNullOrWhiteSpace(_settings.ApiKey))
-        {
-            Status("Set your TMDB API key in Preferences first.");
-            return null;
-        }
-        return new TmdbClient(_settings.ApiKey);
+        var meta = new MetadataService(_settings);
+        if (meta.IsConfigured) return meta;
+
+        Status(meta.ConfigurationHint);
+        return null;
     }
 
     void Refresh(int? selectIndex = null)

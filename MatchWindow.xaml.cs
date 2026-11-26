@@ -32,15 +32,15 @@ public partial class MatchWindow : Window
         public event PropertyChangedEventHandler? PropertyChanged;
     }
 
-    readonly TmdbClient _client;
+    readonly MetadataService _meta;
     readonly int? _year;
 
     public SearchResult? Result { get; private set; }
 
-    public MatchWindow(TmdbClient client, string query, bool tvMode, int? year)
+    public MatchWindow(MetadataService meta, string query, bool tvMode, int? year)
     {
         InitializeComponent();
-        _client = client;
+        _meta = meta;
         _year = year;
         QueryBox.Text = query;
         TvRadio.IsChecked = tvMode;
@@ -69,8 +69,8 @@ public partial class MatchWindow : Window
         {
             InfoText.Text = "Searching...";
             var search = TvRadio.IsChecked == true
-                ? await _client.SearchTvSmartAsync(query)
-                : await _client.SearchMoviesSmartAsync(query, _year);
+                ? await _meta.SearchTvAsync(query)
+                : await _meta.SearchMoviesAsync(query, _year);
 
             var rows = search.Results.Select(r => new MatchRow(r)).ToList();
             ResultsBox.ItemsSource = rows;
@@ -95,7 +95,11 @@ public partial class MatchWindow : Window
     {
         var tasks = rows
             .Where(r => r.Item.PosterPath is not null)
-            .Select(async r => r.Poster = await ImageLoader.LoadAsync(TmdbClient.ImageUrl(r.Item.PosterPath!, "w185")));
+            .Select(async r =>
+            {
+                var url = MetadataService.PosterUrl(r.Item, "w185");
+                if (url.Length > 0) r.Poster = await ImageLoader.LoadAsync(url);
+            });
         await Task.WhenAll(tasks);
     }
 
@@ -112,7 +116,8 @@ public partial class MatchWindow : Window
         PreviewText.Text = row.Poster is null ? "No artwork" : "";
 
         if (row.Item.PosterPath is null) return;
-        var large = await ImageLoader.LoadAsync(TmdbClient.ImageUrl(row.Item.PosterPath, "w342"));
+        var url = MetadataService.PosterUrl(row.Item, "w342");
+        var large = url.Length == 0 ? null : await ImageLoader.LoadAsync(url);
         if (large is not null && ResultsBox.SelectedItem == row)
         {
             PreviewImage.Source = large;

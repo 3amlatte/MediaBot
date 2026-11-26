@@ -18,7 +18,10 @@ public record AppSettings(
     string SonarrUrl = "",
     string SonarrApiKey = "",
     bool SonarrIncludeSpecials = false,
-    bool SonarrMonitoredOnly = false);
+    bool SonarrMonitoredOnly = false,
+    string MetadataSource = "tmdb",
+    string TvdbApiKey = "",
+    string TvdbPin = "");
 
 public static class SettingsStore
 {

@@ -15,8 +15,20 @@
                 <GroupBox Header="Metadata" Padding="8" Margin="0,0,0,10">
                     <StackPanel>
                         <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="Source" Width="130" VerticalAlignment="Center"/>
+                            <ComboBox x:Name="SourceCombo" Width="180" HorizontalAlignment="Left"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
                             <TextBlock DockPanel.Dock="Left" Text="TMDB API key" Width="130" VerticalAlignment="Center"/>
                             <TextBox x:Name="ApiKeyBox"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="TVDB API key" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="TvdbKeyBox" ToolTip="From thetvdb.com/dashboard/account/apikeys"/>
+                        </DockPanel>
+                        <DockPanel Margin="0,0,0,6">
+                            <TextBlock DockPanel.Dock="Left" Text="TVDB PIN (optional)" Width="130" VerticalAlignment="Center"/>
+                            <TextBox x:Name="TvdbPinBox" ToolTip="Only needed for subscriber API keys"/>
                         </DockPanel>
                         <CheckBox x:Name="WriteMetadataBox"
                                   Content="Write NFO files and posters (Plex, Kodi, Jellyfin)"

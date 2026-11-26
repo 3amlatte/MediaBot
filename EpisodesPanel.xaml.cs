@@ -16,8 +16,8 @@ public partial class EpisodesPanel : UserControl
     public record SeasonRow(SeasonSummary Season)
     {
         public string Display => Season.Number == 0
-            ? $"Specials ({Season.EpisodeCount})"
-            : $"{Season.Name} ({Season.EpisodeCount} episodes)";
+            ? "Specials"
+            : Season.EpisodeCount > 0 ? $"{Season.Name} ({Season.EpisodeCount} episodes)" : Season.Name;
         public override string ToString() => Display;
     }
 
@@ -25,7 +25,8 @@ public partial class EpisodesPanel : UserControl
 
     readonly List<RenameItem> _items = new();
     AppSettings _settings = new();
-    TmdbClient? _client;
+    MetadataService? _meta;
+    SearchResult? _showResult;
     TvDetails? _show;
 
     public EpisodesPanel()
@@ -43,9 +44,10 @@ public partial class EpisodesPanel : UserControl
 
     async void Search_Click(object sender, RoutedEventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(_settings.ApiKey))
+        var meta = new MetadataService(_settings);
+        if (!meta.IsConfigured)
         {
-            SummaryText.Text = "Set your TMDB API key in Preferences first.";
+            SummaryText.Text = meta.ConfigurationHint;
             return;
         }
 
@@ -59,8 +61,8 @@ public partial class EpisodesPanel : UserControl
         try
         {
             SummaryText.Text = "Searching...";
-            _client = new TmdbClient(_settings.ApiKey);
-            var search = await _client.SearchTvSmartAsync(query);
+            _meta = meta;
+            var search = await _meta.SearchTvAsync(query);
             if (search.Results.Count == 0)
             {
                 ShowCombo.ItemsSource = null;
@@ -86,12 +88,13 @@ public partial class EpisodesPanel : UserControl
 
     async void ShowCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
-        if (ShowCombo.SelectedItem is not ShowRow row || _client is null) return;
+        if (ShowCombo.SelectedItem is not ShowRow row || _meta is null) return;
 
         try
         {
             SummaryText.Text = "Loading show...";
-            _show = await _client.GetTvDetailsAsync(row.Show.Id);
+            _showResult = row.Show;
+            _show = await _meta.GetTvDetailsAsync(row.Show);
             var seasons = _show.Seasons.Select(s => new SeasonRow(s)).ToList();
             SeasonCombo.ItemsSource = seasons;
 
@@ -116,7 +119,7 @@ public partial class EpisodesPanel : UserControl
 
     async void LoadSeason(SeasonRow? season)
     {
-        if (season is null || _show is null || _client is null)
+        if (season is null || _show is null || _meta is null || _showResult is null)
         {
             EpisodeGrid.ItemsSource = null;
             return;
@@ -124,7 +127,7 @@ public partial class EpisodesPanel : UserControl
 
         try
         {
-            var episodes = await _client.GetSeasonEpisodesAsync(_show.Id, season.Season.Number);
+            var episodes = await _meta.GetEpisodesAsync(_showResult, season.Season.Number);
             var rows = episodes
                 .OrderBy(kv => kv.Key)
                 .Select(kv => new EpisodeRow(

@@ -1,32 +1,43 @@
 # MediaBot
 
-A FileBot-style desktop app (WPF, C#) that renames TV episodes, movies, and subtitles using TheMovieDB metadata.
+**Current release: 2.2.0** — [download the installer](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
 
-## Building the installer
+A FileBot-style desktop app for Windows that renames TV episodes, movies, and subtitles from TMDB or TheTVDB, checks Sonarr for missing episodes, and verifies checksums.
 
-Targets .NET 10 (LTS). Requires the .NET 10 SDK (`global.json` pins 10.0.404) and the WiX tool (`dotnet tool install --global wix`).
+## Features
 
-```
-powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 1.0.0
-```
+- **Rename** TV episodes and movies from TMDB or TheTVDB, with templates and Plex-style folder layouts.
+- **Match** dialog with posters, smart searching that handles full scene file names, and season/episode titles.
+- **Episodes** browser that marks which episodes you already have.
+- **Subtitles** matching from local files or OpenSubtitles, with UTF-8 conversion.
+- **SFV & Checksums** verification and creation, plus srrDB lookup by CRC32.
+- **Missing Episodes** from Sonarr, or gaps in files you add.
+- **List** export as text or CSV.
+- **Undo** for the last 50 rename batches.
 
-The installer is written to `dist\MediaBot-<version>-x64.msi`. The script deletes older `MediaBot-*` and `MediaRenamer-*` files in `dist` first, so only the newest build stays. It installs to `Program Files\MediaBot` with a Start menu shortcut and includes the .NET 10 runtime, so users don't need to install .NET.
+## Install
 
-The installer is unsigned, so Windows SmartScreen may warn users when they run it.
+1. Download the latest `MediaBot-<version>-x64.msi` from [Releases](https://github.com/3amlatte/MediaBot/releases/latest).
+2. Run it. It installs to `Program Files\MediaBot` and includes the .NET runtime, so nothing else is needed.
+3. Open **Preferences** and paste a TMDB API key (free from https://www.themoviedb.org/settings/api), or pick **TheTVDB** as the source and paste a TVDB key instead. Settings are saved to `%AppData%\MediaRenamer\settings.json`.
 
-## Setup
+The installer is unsigned, so Windows SmartScreen may warn you. Choose **More info** then **Run anyway** if you trust the download.
 
-1. Get a free API key at https://www.themoviedb.org/settings/api (use the "API Key", v3 auth).
-2. Build and run:
-   ```
-   dotnet run --project MediaRenamer.csproj
-   ```
-3. Open **Settings > Preferences** and paste the key into **TMDB API key**. Settings are saved to `%AppData%\MediaRenamer\settings.json`.
+## Metadata sources
+
+MediaBot can use either **TMDB** (default) or **TheTVDB** for titles, episode lists, posters and NFO data. Pick one under **Preferences > Metadata > Source**.
+
+- **TMDB** key: free from https://www.themoviedb.org/settings/api.
+- **TheTVDB** key: free from https://thetvdb.com/dashboard/account/apikeys. Subscriber keys also need the PIN shown with the key; enter it in **TVDB PIN**.
+
+Both keys can be stored at once, so switching source doesn't require re-entering anything. A match remembers the database it came from, so unfinished work keeps using the right source if you switch later.
+
+TMDB search results include episode counts per season; TheTVDB doesn't return those, so season labels there show the season name only.
 
 ## Usage
 
 1. Drag video files, subtitle files, or whole folders onto the window (or use **Add Files**).
-2. Click **Fetch Data**. In the Match window, choose **TV Episodes** or **Movies** (set automatically from your files), check the search box, click **Search**, then pick the right match and click **OK**. Results show TMDB posters, with a larger preview of the selected show or movie.
+2. Click **Fetch Data**. In the Match window, choose **TV Episodes** or **Movies** (set automatically from your files), check the search box, click **Search**, then pick the right match and click **OK**. Results show posters from the selected source, with a larger preview of the selected show or movie.
 3. Click **Match** to preview the new names and destinations in the **New Names** panel, with the poster of the matched show or movie. Nothing is changed yet.
 4. Click **Rename** to apply. Files that already exist at the target name are skipped.
 
@@ -133,12 +144,24 @@ Use **Copy** to put the list on the clipboard, or **Save...** to write a `.txt` 
 
 Defaults: TV name `{n} - S{s}E{e} - {t}`, Movie name `{n} ({y})`.
 
+## Building from source
+
+For developers. Targets .NET 10 (LTS); `global.json` pins SDK 10.0.404.
+
+```
+dotnet run --project MediaRenamer.csproj
+```
+
+To build the installer, install the WiX tool (`dotnet tool install --global wix`) and run:
+
+```
+powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.2.0
+```
+
+The MSI is written to `dist\MediaBot-<version>-x64.msi`. The script removes older builds from `dist` first.
+
 ## Licence
 
 MIT. See [LICENSE](LICENSE).
 
-MediaBot uses the TMDB and srrDB APIs but is not endorsed or certified by them.
-
-## Limitations
-
-- Only TMDB is supported. TheTVDB is not implemented.
+MediaBot uses the TMDB, TheTVDB and srrDB APIs but is not endorsed or certified by them.

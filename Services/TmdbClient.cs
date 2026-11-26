@@ -3,7 +3,7 @@ using System.Text.Json;
 
 namespace MediaRenamer.Services;
 
-public record SearchResult(int Id, string Title, string? Year, string Kind, string? PosterPath = null)
+public record SearchResult(int Id, string Title, string? Year, string Kind, string? PosterPath = null, string Source = "tmdb")
 {
     public override string ToString() => Year is null ? Title : $"{Title} ({Year})";
 }
@@ -38,61 +38,6 @@ public class TmdbClient
         if (!resp.IsSuccessStatusCode)
             throw new InvalidOperationException($"TMDB error {(int)resp.StatusCode}: {body}");
         return JsonDocument.Parse(body);
-    }
-
-    public record SmartSearch(List<SearchResult> Results, string Query);
-
-    /// <summary>
-    /// Searches TV shows, retrying with a cleaned-up title and then progressively
-    /// shorter titles, so scene file names and release groups still find a match.
-    /// </summary>
-    public async Task<SmartSearch> SearchTvSmartAsync(string query)
-    {
-        foreach (var candidate in Candidates(query))
-        {
-            var results = await SearchTvAsync(candidate);
-            if (results.Count > 0) return new SmartSearch(results, candidate);
-        }
-        return new SmartSearch(new List<SearchResult>(), query);
-    }
-
-    public async Task<SmartSearch> SearchMoviesSmartAsync(string query, int? year)
-    {
-        foreach (var candidate in Candidates(query))
-        {
-            var withYear = await SearchMoviesAsync(candidate, year);
-            if (withYear.Count > 0) return new SmartSearch(withYear, candidate);
-        }
-
-        if (year is not null)
-        {
-            foreach (var candidate in Candidates(query))
-            {
-                var anyYear = await SearchMoviesAsync(candidate, null);
-                if (anyYear.Count > 0) return new SmartSearch(anyYear, candidate);
-            }
-        }
-
-        return new SmartSearch(new List<SearchResult>(), query);
-    }
-
-    static IEnumerable<string> Candidates(string query)
-    {
-        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
-        var original = query.Trim();
-        if (seen.Add(original)) yield return original;
-
-        var parsed = FilenameParser.Parse(original).Title;
-        if (parsed.Length > 0 && seen.Add(parsed)) yield return parsed;
-
-        var baseTitle = parsed.Length > 0 ? parsed : original;
-        var words = baseTitle.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        for (int n = words.Length - 1; n >= 2; n--)
-        {
-            var candidate = string.Join(" ", words.Take(n));
-            if (seen.Add(candidate)) yield return candidate;
-        }
     }
 
     public async Task<List<SearchResult>> SearchMoviesAsync(string query, int? year)
