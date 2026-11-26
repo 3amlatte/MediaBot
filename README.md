@@ -133,6 +133,12 @@ Use **Copy** to put the list on the clipboard, or **Save...** to write a `.txt` 
 
 Defaults: TV name `{n} - S{s}E{e} - {t}`, Movie name `{n} ({y})`.
 
+## Licence
+
+MIT. See [LICENSE](LICENSE).
+
+MediaBot uses the TMDB and srrDB APIs but is not endorsed or certified by them.
+
 ## Limitations
 
 - Only TMDB is supported. TheTVDB is not implemented.
