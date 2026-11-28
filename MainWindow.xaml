@@ -92,21 +92,29 @@
                     </DockPanel>
                 </GroupBox>
 
-                <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                    <Image x:Name="MatchPoster" Width="92" Height="130" Stretch="Uniform" Margin="0,0,0,10"/>
-                    <Button Width="92" Height="64" ToolTip="Apply the fetched match to the files" Click="Match_Click">
-                        <StackPanel>
-                            <TextBlock Text="&#xE8AB;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#6CC24A" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Match" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                    <Button Width="92" Height="64" Margin="0,16,0,0" ToolTip="Rename the files" Click="Rename_Click">
-                        <StackPanel>
-                            <TextBlock Text="&#xE72A;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#4DA3FF" HorizontalAlignment="Center"/>
-                            <TextBlock Text="Rename" HorizontalAlignment="Center"/>
-                        </StackPanel>
-                    </Button>
-                </StackPanel>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <Image x:Name="MatchPoster" Grid.Row="0" Width="92" Height="130" Stretch="Uniform"
+                           HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,10"/>
+                    <StackPanel Grid.Row="1" HorizontalAlignment="Center">
+                        <Button Width="92" Height="64" ToolTip="Apply the fetched match to the files" Click="Match_Click">
+                            <StackPanel>
+                                <TextBlock Text="&#xE8AB;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#6CC24A" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Match" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                        <Button Width="92" Height="64" Margin="0,16,0,0" ToolTip="Rename the files" Click="Rename_Click">
+                            <StackPanel>
+                                <TextBlock Text="&#xE72A;" FontFamily="Segoe MDL2 Assets" FontSize="20" Foreground="#4DA3FF" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Rename" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
                 <GroupBox Grid.Column="2" Header="New Names">
                     <DockPanel>

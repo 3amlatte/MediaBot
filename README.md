@@ -1,6 +1,6 @@
 # MediaBot
 
-**Current release: 2.3.0** — [download](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
+**Current release: 2.3.1** — [download](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
 
 A FileBot-style desktop app for Windows that renames TV episodes, movies, and subtitles from TMDB or TheTVDB, checks Sonarr for missing episodes, and verifies checksums.
 
@@ -165,15 +165,15 @@ dotnet run --project MediaRenamer.csproj
 To build the installer, install the WiX tool (`dotnet tool install --global wix`) and run:
 
 ```
-powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.3.0
+powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.3.1
 ```
 
-The MSI is written to `dist\MediaBot-<version>-x64.msi`. The script removes older builds from `dist` first.
+The MSI is written to `dist\MediaBot-<version>-x64.msi`. The script removes older MSI builds from `dist` first.
 
 To build the portable ZIP:
 
 ```
-powershell -ExecutionPolicy Bypass -File installer\build-portable.ps1 -Version 2.3.0
+powershell -ExecutionPolicy Bypass -File installer\build-portable.ps1 -Version 2.3.1
 ```
 
 The ZIP is written to `dist\MediaBot-<version>-portable-x64.zip`. It contains a self-contained x64 build, the README and licence, and the `MediaBot.portable` marker that enables portable mode.
