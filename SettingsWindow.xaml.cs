@@ -36,6 +36,8 @@ public partial class SettingsWindow : Window
         OpenSubsPasswordBox.Password = current.OpenSubsPassword;
         SubtitleLanguageBox.Text = current.SubtitleLanguage;
         DryRunBox.IsChecked = current.DryRun;
+        CheckUpdatesBox.IsChecked = current.CheckUpdates;
+        VersionText.Text = $"This build: MediaBot {UpdateChecker.DisplayVersion}";
     }
 
     protected override void OnSourceInitialized(EventArgs e)
@@ -72,6 +74,36 @@ public partial class SettingsWindow : Window
         if (dlg.ShowDialog(this) == true) OutputBox.Text = dlg.FolderName;
     }
 
+    async void CheckNow_Click(object sender, RoutedEventArgs e)
+    {
+        CheckNowButton.IsEnabled = false;
+        UpdateStatusText.Text = "Checking...";
+        try
+        {
+            var update = await UpdateChecker.CheckAsync();
+            if (update is null)
+            {
+                UpdateStatusText.Text = "You're up to date.";
+                return;
+            }
+
+            var tag = update.Tag.TrimStart('v', 'V');
+            UpdateStatusText.Text = $"Version {tag} is available.";
+            var answer = MessageBox.Show(this,
+                $"MediaBot {tag} is available. Open the download page?",
+                "Update available", MessageBoxButton.YesNo, MessageBoxImage.Information);
+            if (answer == MessageBoxResult.Yes) UpdateChecker.OpenReleasePage(update.Url);
+        }
+        catch
+        {
+            UpdateStatusText.Text = "Couldn't check. Are you online?";
+        }
+        finally
+        {
+            CheckNowButton.IsEnabled = true;
+        }
+    }
+
     void Ok_Click(object sender, RoutedEventArgs e)
     {
         Result = _current with
@@ -94,7 +126,8 @@ public partial class SettingsWindow : Window
             OpenSubsUser = OpenSubsUserBox.Text.Trim(),
             OpenSubsPassword = OpenSubsPasswordBox.Password,
             SubtitleLanguage = SubtitleLanguageBox.Text.Trim(),
-            DryRun = DryRunBox.IsChecked == true
+            DryRun = DryRunBox.IsChecked == true,
+            CheckUpdates = CheckUpdatesBox.IsChecked == true
         };
         DialogResult = true;
     }

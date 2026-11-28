@@ -21,7 +21,8 @@ public record AppSettings(
     bool SonarrMonitoredOnly = false,
     string MetadataSource = "tmdb",
     string TvdbApiKey = "",
-    string TvdbPin = "");
+    string TvdbPin = "",
+    bool CheckUpdates = true);
 
 public static class SettingsStore
 {

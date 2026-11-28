@@ -1,6 +1,6 @@
 # MediaBot
 
-**Current release: 2.3.1** — [download](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
+**Current release: 2.4.0** — [download](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
 
 A FileBot-style desktop app for Windows that renames TV episodes, movies, and subtitles from TMDB or TheTVDB, checks Sonarr for missing episodes, and verifies checksums.
 
@@ -14,6 +14,7 @@ A FileBot-style desktop app for Windows that renames TV episodes, movies, and su
 - **Missing Episodes** from Sonarr, or gaps in files you add.
 - **List** export as text or CSV.
 - **Undo** for the last 50 rename batches.
+- **Update check** that tells you when a newer release is on GitHub.
 
 ## Install
 
@@ -32,6 +33,13 @@ Download `MediaBot-<version>-portable-x64.zip`, extract it to any folder you can
 In portable mode, `settings.json` and `undo.json` are kept in the same folder as `MediaBot.exe`, so the whole folder can be moved to a USB drive or another PC with your settings intact. Keep the `MediaBot.portable` marker file next to the exe: it switches the app to portable mode. Delete it to fall back to `%AppData%\MediaRenamer`.
 
 If the folder is read-only (for example on a locked USB stick), settings won't save, so copy the app somewhere writable first.
+
+## Updates
+
+MediaBot checks the public GitHub releases feed once at startup. When a newer version exists, the status bar shows **Update available: x.y.z**; click it to open the release page. The check only reads public release metadata from `api.github.com`. It sends no account details and no usage data.
+
+- Turn the startup check off, or run one on demand, under **Preferences > Updates**. The same section shows which version this build is.
+- Portable builds update the same way: extract the new ZIP over the old folder. Your `settings.json` and `undo.json` are left in place.
 
 ## Metadata sources
 
@@ -165,7 +173,7 @@ dotnet run --project MediaRenamer.csproj
 To build the installer, install the WiX tool (`dotnet tool install --global wix`) and run:
 
 ```
-powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.3.1
+powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.4.0
 ```
 
 The MSI is written to `dist\MediaBot-<version>-x64.msi`. The script removes older MSI builds from `dist` first.
@@ -173,7 +181,7 @@ The MSI is written to `dist\MediaBot-<version>-x64.msi`. The script removes olde
 To build the portable ZIP:
 
 ```
-powershell -ExecutionPolicy Bypass -File installer\build-portable.ps1 -Version 2.3.1
+powershell -ExecutionPolicy Bypass -File installer\build-portable.ps1 -Version 2.4.0
 ```
 
 The ZIP is written to `dist\MediaBot-<version>-portable-x64.zip`. It contains a self-contained x64 build, the README and licence, and the `MediaBot.portable` marker that enables portable mode.

@@ -9,6 +9,7 @@
     <RootNamespace>MediaRenamer</RootNamespace>
     <AssemblyName>MediaBot</AssemblyName>
     <Product>MediaBot</Product>
+    <Version>2.4.0</Version>
     <ApplicationIcon>assets\MediaBot.ico</ApplicationIcon>
   </PropertyGroup>
 

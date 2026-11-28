@@ -14,12 +14,34 @@ public partial class MainWindow : Window
     readonly List<RenameBatch> _history = UndoHistory.Load();
     AppSettings _settings = SettingsStore.Load();
     SearchResult? _match;
+    UpdateInfo? _update;
 
     public MainWindow()
     {
         InitializeComponent();
         Refresh();
+        if (_settings.CheckUpdates) _ = CheckForUpdatesAsync();
     }
+
+    async Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var update = await UpdateChecker.CheckAsync();
+            if (update is null) return;
+
+            _update = update;
+            UpdateLink.Text = $"Update available: {update.Tag.TrimStart('v', 'V')}";
+            UpdateLink.Visibility = Visibility.Visible;
+        }
+        catch
+        {
+            // Offline or GitHub unreachable: stay quiet and keep working.
+        }
+    }
+
+    void Update_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) =>
+        UpdateChecker.OpenReleasePage(_update?.Url ?? UpdateChecker.ReleasesPage);
 
     protected override void OnSourceInitialized(EventArgs e)
     {
@@ -217,6 +239,8 @@ public partial class MainWindow : Window
         _settings = dlg.Result;
         SettingsStore.Save(_settings);
         Refresh();
+        if (_settings.CheckUpdates) _ = CheckForUpdatesAsync();
+        else UpdateLink.Visibility = Visibility.Collapsed;
         Status("Preferences saved.");
     }
 
