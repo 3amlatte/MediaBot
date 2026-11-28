@@ -89,10 +89,24 @@ public partial class SettingsWindow : Window
 
             var tag = update.Tag.TrimStart('v', 'V');
             UpdateStatusText.Text = $"Version {tag} is available.";
+
+            var asset = AppPaths.IsPortable ? update.Portable : update.Msi;
+            if (asset is null)
+            {
+                UpdateChecker.OpenReleasePage(update.PageUrl);
+                return;
+            }
+
             var answer = MessageBox.Show(this,
-                $"MediaBot {tag} is available. Open the download page?",
-                "Update available", MessageBoxButton.YesNo, MessageBoxImage.Information);
-            if (answer == MessageBoxResult.Yes) UpdateChecker.OpenReleasePage(update.Url);
+                $"MediaBot {tag} is available. Download and install it now?\n\n" +
+                "MediaBot will close and reopen when the update is done.",
+                "Install update", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+            if (answer == MessageBoxResult.Yes && Owner is MainWindow main)
+            {
+                Close();
+                _ = main.InstallUpdateAsync(update);
+            }
         }
         catch
         {

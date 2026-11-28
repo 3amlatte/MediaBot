@@ -144,7 +144,7 @@
                 <TextBlock x:Name="UpdateLink" DockPanel.Dock="Right" Visibility="Collapsed" Margin="12,0,0,0"
                            Foreground="#4DA3FF" Cursor="Hand" TextDecorations="Underline"
                            MouseLeftButtonUp="Update_Click"
-                           ToolTip="A newer MediaBot is available; open the download page"/>
+                           ToolTip="Download and install the new version"/>
                 <TextBlock x:Name="StatusText" Text="Drop video or subtitle files here to begin."/>
             </DockPanel>
         </Border>

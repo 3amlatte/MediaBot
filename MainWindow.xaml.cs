@@ -15,6 +15,7 @@ public partial class MainWindow : Window
     AppSettings _settings = SettingsStore.Load();
     SearchResult? _match;
     UpdateInfo? _update;
+    bool _updating;
 
     public MainWindow()
     {
@@ -40,8 +41,56 @@ public partial class MainWindow : Window
         }
     }
 
-    void Update_Click(object sender, System.Windows.Input.MouseButtonEventArgs e) =>
-        UpdateChecker.OpenReleasePage(_update?.Url ?? UpdateChecker.ReleasesPage);
+    void Update_Click(object sender, System.Windows.Input.MouseButtonEventArgs e)
+    {
+        if (_update is null)
+        {
+            UpdateChecker.OpenReleasePage(UpdateChecker.ReleasesPage);
+            return;
+        }
+
+        var tag = _update.Tag.TrimStart('v', 'V');
+        var answer = MessageBox.Show(this,
+            $"MediaBot {tag} is available. Download and install it now?\n\n" +
+            "MediaBot will close and reopen when the update is done.",
+            "Install update", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+        if (answer == MessageBoxResult.Yes) _ = InstallUpdateAsync(_update);
+    }
+
+    public async Task InstallUpdateAsync(UpdateInfo update)
+    {
+        if (_updating) return;
+
+        var asset = AppPaths.IsPortable ? update.Portable : update.Msi;
+        if (asset is null)
+        {
+            UpdateChecker.OpenReleasePage(update.PageUrl);
+            return;
+        }
+
+        _updating = true;
+        UpdateLink.Visibility = Visibility.Collapsed;
+        try
+        {
+            Status("Downloading update...");
+            var progress = new Progress<double>(p => Status($"Downloading update... {p:P0}"));
+            var package = await UpdateInstaller.DownloadAsync(asset, progress);
+
+            Status("Installing update... MediaBot will reopen when it's done.");
+            UpdateInstaller.Launch(package, AppPaths.IsPortable);
+            Application.Current.Shutdown();
+        }
+        catch (Exception ex)
+        {
+            _updating = false;
+            UpdateLink.Visibility = Visibility.Visible;
+            Status("Update failed.");
+            MessageBox.Show(this,
+                "MediaBot couldn't download or start the update.\n\n" + ex.Message,
+                "Update failed", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+    }
 
     protected override void OnSourceInitialized(EventArgs e)
     {

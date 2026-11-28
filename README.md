@@ -1,6 +1,6 @@
 # MediaBot
 
-**Current release: 2.4.0** — [download](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
+**Current release: 2.5.0** — [download](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
 
 A FileBot-style desktop app for Windows that renames TV episodes, movies, and subtitles from TMDB or TheTVDB, checks Sonarr for missing episodes, and verifies checksums.
 
@@ -14,7 +14,7 @@ A FileBot-style desktop app for Windows that renames TV episodes, movies, and su
 - **Missing Episodes** from Sonarr, or gaps in files you add.
 - **List** export as text or CSV.
 - **Undo** for the last 50 rename batches.
-- **Update check** that tells you when a newer release is on GitHub.
+- **Update check** with one-click download and install from GitHub.
 
 ## Install
 
@@ -36,10 +36,12 @@ If the folder is read-only (for example on a locked USB stick), settings won't s
 
 ## Updates
 
-MediaBot checks the public GitHub releases feed once at startup. When a newer version exists, the status bar shows **Update available: x.y.z**; click it to open the release page. The check only reads public release metadata from `api.github.com`. It sends no account details and no usage data.
+MediaBot checks the public GitHub releases feed once at startup. When a newer version exists, the status bar shows **Update available: x.y.z**. Click it, confirm, and MediaBot downloads the matching release asset, verifies its SHA-256 checksum, installs it and reopens. The check only reads public release metadata from `api.github.com`; no account details or usage data are sent.
 
-- Turn the startup check off, or run one on demand, under **Preferences > Updates**. The same section shows which version this build is.
-- Portable builds update the same way: extract the new ZIP over the old folder. Your `settings.json` and `undo.json` are left in place.
+- **Installed copies** download the MSI and run it with a Windows UAC prompt. The update replaces the existing install and keeps your settings.
+- **Portable copies** download the ZIP and replace the files in the app folder after MediaBot closes. `settings.json` and `undo.json` stay where they are, so preferences and undo history survive.
+- Turn the startup check off, or check and install on demand, under **Preferences > Updates**. The same section shows which version this build is.
+- If a download fails its checksum check, MediaBot discards it and leaves the current version alone.
 
 ## Metadata sources
 
@@ -173,7 +175,7 @@ dotnet run --project MediaRenamer.csproj
 To build the installer, install the WiX tool (`dotnet tool install --global wix`) and run:
 
 ```
-powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.4.0
+powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.5.0
 ```
 
 The MSI is written to `dist\MediaBot-<version>-x64.msi`. The script removes older MSI builds from `dist` first.
@@ -181,7 +183,7 @@ The MSI is written to `dist\MediaBot-<version>-x64.msi`. The script removes olde
 To build the portable ZIP:
 
 ```
-powershell -ExecutionPolicy Bypass -File installer\build-portable.ps1 -Version 2.4.0
+powershell -ExecutionPolicy Bypass -File installer\build-portable.ps1 -Version 2.5.0
 ```
 
 The ZIP is written to `dist\MediaBot-<version>-portable-x64.zip`. It contains a self-contained x64 build, the README and licence, and the `MediaBot.portable` marker that enables portable mode.

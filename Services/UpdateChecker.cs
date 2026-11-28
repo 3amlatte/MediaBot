@@ -5,7 +5,9 @@ using System.Text.Json;
 
 namespace MediaRenamer.Services;
 
-public record UpdateInfo(Version Version, string Tag, string Url);
+public record UpdateAsset(string Name, string Url, string? Sha256);
+
+public record UpdateInfo(Version Version, string Tag, string PageUrl, UpdateAsset? Msi, UpdateAsset? Portable);
 
 /// <summary>
 /// Checks the public GitHub releases feed for a newer MediaBot version.
@@ -51,11 +53,37 @@ public static class UpdateChecker
         if (!Version.TryParse(tag.Trim().TrimStart('v', 'V'), out var version)) return null;
         if (Normalize(version) <= Normalize(CurrentVersion)) return null;
 
-        var url = root.TryGetProperty("html_url", out var urlElement)
+        var page = root.TryGetProperty("html_url", out var urlElement)
             ? urlElement.GetString()
             : null;
 
-        return new UpdateInfo(version, tag, url ?? ReleasesPage);
+        UpdateAsset? msi = null;
+        UpdateAsset? portable = null;
+
+        if (root.TryGetProperty("assets", out var assets) && assets.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var asset in assets.EnumerateArray())
+            {
+                var name = asset.TryGetProperty("name", out var nameElement) ? nameElement.GetString() ?? "" : "";
+                var url = asset.TryGetProperty("browser_download_url", out var downloadElement)
+                    ? downloadElement.GetString()
+                    : null;
+                if (string.IsNullOrEmpty(url)) continue;
+
+                var digest = asset.TryGetProperty("digest", out var digestElement)
+                    ? digestElement.GetString()
+                    : null;
+                if (digest is not null && digest.StartsWith("sha256:", StringComparison.OrdinalIgnoreCase))
+                    digest = digest["sha256:".Length..];
+
+                var item = new UpdateAsset(name, url, string.IsNullOrWhiteSpace(digest) ? null : digest);
+
+                if (name.EndsWith("-x64.msi", StringComparison.OrdinalIgnoreCase)) msi = item;
+                else if (name.EndsWith("-portable-x64.zip", StringComparison.OrdinalIgnoreCase)) portable = item;
+            }
+        }
+
+        return new UpdateInfo(version, tag, page ?? ReleasesPage, msi, portable);
     }
 
     public static void OpenReleasePage(string url)
@@ -70,7 +98,7 @@ public static class UpdateChecker
         }
     }
 
-    // Tags like "2.4.0" parse with a -1 revision; treat missing parts as zero.
+    // Tags like "2.5.0" parse with a -1 revision; treat missing parts as zero.
     static Version Normalize(Version v) =>
         new(v.Major, v.Minor, Math.Max(v.Build, 0), Math.Max(v.Revision, 0));
 }
