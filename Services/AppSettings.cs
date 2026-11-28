@@ -25,8 +25,7 @@ public record AppSettings(
 
 public static class SettingsStore
 {
-    static readonly string FilePath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaRenamer", "settings.json");
+    static readonly string FilePath = AppPaths.DataFile("settings.json");
 
     public static AppSettings Load()
     {

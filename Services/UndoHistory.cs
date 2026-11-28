@@ -5,8 +5,7 @@ namespace MediaRenamer.Services;
 public static class UndoHistory
 {
     const int MaxBatches = 50;
-    static readonly string FilePath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "MediaRenamer", "undo.json");
+    static readonly string FilePath = AppPaths.DataFile("undo.json");
 
     public static List<RenameBatch> Load()
     {

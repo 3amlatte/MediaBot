@@ -71,8 +71,8 @@ $($compXml.ToString())    </ComponentGroup>
 Set-Content -Path (Join-Path $root 'Components.wxs') -Value $componentsWxs -Encoding UTF8
 
 New-Item -ItemType Directory -Force -Path $dist | Out-Null
-Get-ChildItem -Path $dist -Filter 'MediaBot-*' | Remove-Item -Force
-Get-ChildItem -Path $dist -Filter 'MediaRenamer-*' | Remove-Item -Force
+Get-ChildItem -Path $dist -Filter 'MediaBot-*-x64.msi' | Remove-Item -Force
+Get-ChildItem -Path $dist -Filter 'MediaBot-*-x64.wixpdb' | Remove-Item -Force
 $msi = Join-Path $dist "MediaBot-$Version-x64.msi"
 wix build "Product.wxs" "Components.wxs" -arch x64 -ext WixToolset.UI.wixext -d "Version=$Version" -o $msi
 if ($LASTEXITCODE -ne 0) { throw "wix build failed" }

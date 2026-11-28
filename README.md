@@ -1,6 +1,6 @@
 # MediaBot
 
-**Current release: 2.2.0** — [download the installer](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
+**Current release: 2.3.0** — [download](https://github.com/3amlatte/MediaBot/releases/latest) · [what's new](https://github.com/3amlatte/MediaBot/releases)
 
 A FileBot-style desktop app for Windows that renames TV episodes, movies, and subtitles from TMDB or TheTVDB, checks Sonarr for missing episodes, and verifies checksums.
 
@@ -17,11 +17,21 @@ A FileBot-style desktop app for Windows that renames TV episodes, movies, and su
 
 ## Install
 
+### Installer
+
 1. Download the latest `MediaBot-<version>-x64.msi` from [Releases](https://github.com/3amlatte/MediaBot/releases/latest).
 2. Run it. It installs to `Program Files\MediaBot` and includes the .NET runtime, so nothing else is needed.
 3. Open **Preferences** and paste a TMDB API key (free from https://www.themoviedb.org/settings/api), or pick **TheTVDB** as the source and paste a TVDB key instead. Settings are saved to `%AppData%\MediaRenamer\settings.json`.
 
 The installer is unsigned, so Windows SmartScreen may warn you. Choose **More info** then **Run anyway** if you trust the download.
+
+### Portable
+
+Download `MediaBot-<version>-portable-x64.zip`, extract it to any folder you can write to, and run `MediaBot.exe`. Nothing is installed and no admin rights are needed. The .NET runtime is included.
+
+In portable mode, `settings.json` and `undo.json` are kept in the same folder as `MediaBot.exe`, so the whole folder can be moved to a USB drive or another PC with your settings intact. Keep the `MediaBot.portable` marker file next to the exe: it switches the app to portable mode. Delete it to fall back to `%AppData%\MediaRenamer`.
+
+If the folder is read-only (for example on a locked USB stick), settings won't save, so copy the app somewhere writable first.
 
 ## Metadata sources
 
@@ -130,7 +140,7 @@ Use **Copy** to put the list on the clipboard, or **Save...** to write a `.txt` 
 
 ## Undo
 
-**Undo last rename** reverses the most recent rename batch. It moves files back and removes any folders the batch created, if they are empty. The history is saved in `%AppData%\MediaRenamer\undo.json` and keeps the last 50 batches. A file that has been moved or renamed since the batch can't be restored, and the app will tell you how many failed.
+**Undo last rename** reverses the most recent rename batch. It moves files back and removes any folders the batch created, if they are empty. The history is saved in `undo.json` in `%AppData%\MediaRenamer` (or next to `MediaBot.exe` in the portable version) and keeps the last 50 batches. A file that has been moved or renamed since the batch can't be restored, and the app will tell you how many failed.
 
 ## Templates
 
@@ -155,10 +165,18 @@ dotnet run --project MediaRenamer.csproj
 To build the installer, install the WiX tool (`dotnet tool install --global wix`) and run:
 
 ```
-powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.2.0
+powershell -ExecutionPolicy Bypass -File installer\build-msi.ps1 -Version 2.3.0
 ```
 
 The MSI is written to `dist\MediaBot-<version>-x64.msi`. The script removes older builds from `dist` first.
+
+To build the portable ZIP:
+
+```
+powershell -ExecutionPolicy Bypass -File installer\build-portable.ps1 -Version 2.3.0
+```
+
+The ZIP is written to `dist\MediaBot-<version>-portable-x64.zip`. It contains a self-contained x64 build, the README and licence, and the `MediaBot.portable` marker that enables portable mode.
 
 ## Licence
 
